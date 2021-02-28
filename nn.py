@@ -4,7 +4,7 @@ sys.path.append("nn4nlp-code/01-intro-pytorch")
 import torch
 from torch import nn
 from torch.autograd import Variable
-from model import BoW
+from model import DeepCBoW
 import pickle
 import pandas as pd
 import random
@@ -15,6 +15,8 @@ from collections import defaultdict
 from konoha import WordTokenizer
 
 konoha_tokenizer = WordTokenizer('Sentencepiece', model_path="/home/icaro/konoha_model.spm")
+
+nlayers, emb_size, hid_size = 3, 6, 6
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 w2i = defaultdict(lambda: len(w2i)) #word to index
@@ -33,7 +35,7 @@ def train(data_path):
     w2i = defaultdict(lambda: w2i["<unk>"], w2i)
     nwords, ntags = len(w2i), len(t2i)
     
-    model = BoW(nwords, ntags)
+    model = DeepCBoW(nwords, ntags, nlayers, emb_size, hid_size)
     model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters())
@@ -67,8 +69,8 @@ def classify(text):
     words = text.lower().strip()
     input_ = torch.LongTensor([w2i[str(x)] for x in konoha_tokenizer.tokenize(words)]).to(device)
     cl = model(input_)[0].detach().cpu().numpy()
-    cl = np.argmax(cl)
-    return i2t[cl] 
+    cls = np.argmax(cl)
+    return i2t[cls], cl
 
 if __name__=="__main__":
     model = train("data.csv")
