@@ -4,6 +4,10 @@ This program can filter out articles that you can read from the website `easyjap
 
 If you change the tokenizer used on `nn.py` as well as the links in the project, you can adapt the code to work with some other language in some other website.
 
+### In case you are Elias (ñ sabe ler)
+
+Gets easy to read articles from a website.
+
 ### Prerequisites
 
 - Python3
