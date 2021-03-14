@@ -8,7 +8,6 @@ from model import DeepCBoW
 import pickle
 import pandas as pd
 import random
-import re
 import time
 import numpy as np
 from tqdm import tqdm
@@ -19,7 +18,6 @@ konoha_tokenizer = WordTokenizer('Sentencepiece', model_path="/home/icaro/konoha
 
 nlayers, emb_size, hid_size = 3, 6, 6
 
-num_regex = r"-?(?:[0-9]+(?:\.[0-9]*)?|(?:[0-9]+)?\.[0-9]+)"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 w2i = defaultdict(lambda: len(w2i)) #word to index
 w2i["<unk>"]
@@ -27,8 +25,7 @@ t2i = defaultdict(lambda: len(t2i)) #tag to index
 def read_dataset(df):
     for i, row in df.iterrows():
         tag = row["c"]
-        words = re.sub(num_regex,"<num>",str(row["p"]))
-        words = words.lower().strip()
+        words = row["p"].lower().strip()
         yield ([w2i[str(x)] for x in konoha_tokenizer.tokenize(words)], t2i[tag])
 
 def train(data_path):

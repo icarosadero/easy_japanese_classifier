@@ -62,15 +62,19 @@ def classify_article(link,positive_tag=1):
 
 def get_positive_links(home,positive_tag=1,threshold=.7):
     pos_links = []
-    for link in tqdm(get_links(home), desc="Classifying articles"):
+    home_links = get_links(home)
+    for link in tqdm(home_links, desc="Classifying articles"):
         score = classify_article(link,positive_tag)
         if  score > threshold:
             pos_links.append(link)
-    return pos_links
+    ratio = len(pos_links)/len(home_links) if len(home_links)!=0 else 0
+    return pos_links, ratio
 
 if __name__=="__main__":
     for page in homepages:
         print("Current page:", page)
-        for link in get_positive_links(page):
+        links,ratio = get_positive_links(page)
+        print(f"Positive ratio: {ratio}")
+        for link in links:
             print(link)
             
